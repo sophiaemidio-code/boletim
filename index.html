@@ -5,6 +5,8 @@
   <!-- Garante que o site funcione bem em celular -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Boletim Digital</title>
+  <!-- Biblioteca de Gráficos Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Liga o arquivo de estilos -->
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -13,76 +15,124 @@
   <!-- CABEÇALHO -->
   <header class="cabecalho">
     <h1>Boletim Digital</h1>
-    <p class="subtitulo">8º Ano</p>
+    <p class="subtitulo">8º Ano — Turma 8C (Nº 25)</p>
     <p class="estudante">Estudante Exemplo</p>
   </header>
 
   <main class="conteudo">
 
-    <!-- CARDS DE RESUMO -->
-    <section class="cards-resumo">
-      <div class="card">
-        <span class="card-icone">📊</span>
-        <h2>Média geral</h2>
-        <p id="card-media-geral">—</p>
-      </div>
-
-      <div class="card">
-        <span class="card-icone">📝</span>
-        <h2>Total de faltas</h2>
-        <p id="card-total-faltas">—</p>
-      </div>
-
-      <div class="card">
-        <span class="card-icone">✅</span>
-        <h2>Bom desempenho</h2>
-        <p id="card-bom-desempenho">—</p>
-      </div>
-
-      <div class="card">
-        <span class="card-icone">⚠️</span>
-        <h2>Precisam de atenção</h2>
-        <p id="card-atencao">—</p>
-      </div>
-
-      <div class="card">
-        <span class="card-icone">📅</span>
-        <h2>Frequência</h2>
-        <p id="card-frequencia">—</p>
+    <!-- SEÇÃO DE ACESSO COM PIN -->
+    <section id="secao-acesso" class="secao-acesso">
+      <div class="card-acesso">
+        <h2>Acesso ao Boletim</h2>
+        <p class="info-aluno">8º Ano C — Chamada 25</p>
+        <div class="campo-pin">
+          <label for="input-pin">Digite seu PIN:</label>
+          <input type="password" id="input-pin" maxlength="10" placeholder="PIN" />
+        </div>
+        <button id="btn-entrar" onclick="fazerLogin()">Entrar</button>
+        <p id="msg-login" class="msg-status"></p>
       </div>
     </section>
 
-    <!-- TABELA DE DISCIPLINAS -->
-    <section class="tabela-area">
-      <h2>Notas por disciplina</h2>
+    <!-- PAINEL DO BOLETIM (ESCONDIDO ATÉ O LOGIN) -->
+    <div id="painel-boletim" class="painel-boletim" style="display: none;">
 
-      <div class="tabela-responsiva">
-        <table>
-          <thead>
-            <tr>
-              <th>Disciplina</th>
-              <th>1º Tri</th>
-              <th>2º Tri</th>
-              <th>3º Tri</th>
-              <th>Média</th>
-              <th>Faltas</th>
-              <th>Situação</th>
-            </tr>
-          </thead>
-          <!-- O JavaScript vai preencher as linhas aqui -->
-          <tbody id="corpo-tabela"></tbody>
-        </table>
+      <!-- BARRA DE AÇÕES -->
+      <div class="barra-acoes">
+        <button id="btn-alterar-dados" onclick="abrirEditor()">Alterar dados</button>
       </div>
-    </section>
 
-  </main>
+      <!-- CARDS DE RESUMO -->
+      <section class="cards-resumo">
+        <div class="card">
+          <span class="card-icone">📊</span>
+          <h2>Média geral</h2>
+          <p id="card-media-geral">—</p>
+        </div>
 
-  <!-- RODAPÉ -->
-  <footer class="rodape">
-    <p>Projeto Boletim Digital — dados fictícios para estudo.</p>
-  </footer>
+        <div class="card">
+          <span class="card-icone">📝</span>
+          <h2>Total de faltas</h2>
+          <p id="card-total-faltas">—</p>
+        </div>
 
-  <!-- Liga o arquivo JavaScript no final, para a página carregar primeiro -->
-  <script src="script.js"></script>
-</body>
-</html>
+        <div class="card">
+          <span class="card-icone">✅</span>
+          <h2>Bom desempenho</h2>
+          <p id="card-bom-desempenho">—</p>
+        </div>
+
+        <div class="card">
+          <span class="card-icone">⚠️</span>
+          <h2>Precisam de atenção</h2>
+          <p id="card-atencao">—</p>
+        </div>
+
+        <div class="card">
+          <span class="card-icone">📅</span>
+          <h2>Frequência</h2>
+          <p id="card-frequencia">—</p>
+        </div>
+      </section>
+
+      <!-- ÁREA DOS GRÁFICOS -->
+      <section class="area-graficos">
+        <article class="grafico-card">
+          <h2>Média por disciplina</h2>
+          <div class="grafico-container">
+            <canvas id="graficoMediasDisciplinas"></canvas>
+          </div>
+        </article>
+
+        <article class="grafico-card">
+          <h2>Evolução da média geral</h2>
+          <div class="grafico-container">
+            <canvas id="graficoEvolucaoTrimestres"></canvas>
+          </div>
+        </article>
+
+        <article class="grafico-card" id="card-grafico-faltas">
+          <div class="grafico-cabecalho">
+            <h2>Faltas por trimestre</h2>
+            <span id="badge-perigo-faltas" class="badge-perigo" style="display: none;">Perigo</span>
+          </div>
+          <div class="grafico-container">
+            <canvas id="graficoFaltasTrimestres"></canvas>
+          </div>
+        </article>
+      </section>
+
+      <!-- TABELA DE DISCIPLINAS -->
+      <section class="tabela-area">
+        <h2>Notas por disciplina</h2>
+
+        <div class="tabela-responsiva">
+          <table>
+            <thead>
+              <tr>
+                <th>Disciplina</th>
+                <th>1º Tri</th>
+                <th>2º Tri</th>
+                <th>3º Tri</th>
+                <th>Média</th>
+                <th>Faltas</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <!-- O JavaScript vai preencher as linhas aqui -->
+            <tbody id="corpo-tabela"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- FORMULÁRIO DE EDIÇÃO (ESCONDIDO) -->
+      <section id="secao-edicao" class="secao-edicao" style="display: none;">
+        <h2>Editar Notas e Faltas</h2>
+        <div id="container-edicao-disciplinas"></div>
+        <p id="msg-edicao" class="msg-status"></p>
+        <div class="botoes-edicao">
+          <button id="btn-salvar" onclick="salvarAlteracoes()">Salvar alterações</button>
+          <button id="btn-cancelar" onclick="fecharEditor()">Cancelar</button>
+        </div>
+      </section>
